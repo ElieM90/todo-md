@@ -1,0 +1,1 @@
+{ "name": "todo-md", "version": "0.1.0", "description": "Show, add and tick off items in the project's todo.md", "author": { "name": "ElieM90" }, "types": "./types/index.d.ts" }
