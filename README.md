@@ -7,7 +7,8 @@ A Claude Code mod that turns your project's `todo.md` into a live checklist pane
 - **Pane**: progress bar, All / Open / Done filters, one-click toggles, *Clear completed*
 - **Markdown**: task text renders bold, `code` and links
 - **Quick add**: `/todo <text>` from the prompt, one task per line
-- **Status line**: always shows how many tasks are open
+- **Ask Claude**: `/todo review` suggests what to start with; `/todo tidy` cleans up the file and asks before merging duplicates
+- **Status line**: shows how many tasks are open in any project that has a `todo.md`
 - **Stays in sync**: picks up edits made by hand or by Claude after every turn
 
 Works in the Claude Code desktop app (Code tab) and the terminal.
@@ -29,6 +30,8 @@ Then start a new session. Installed plugins load when a session starts.
 | `/todo` or `/todo open` | Open the Todos pane |
 | `/todo <text>` | Add a task to `todo.md` |
 | `/todo` + several lines | Add one task per line (Shift+Enter for new lines) |
+| `/todo review` | Claude reads `todo.md` and suggests the 1-3 tasks to start with, and flags unclear or oversized ones. It doesn't edit the file |
+| `/todo tidy` | Claude normalises the checkboxes, indentation and blank lines without changing any task, then lists likely duplicates and asks you which to keep |
 
 In the pane:
 
@@ -37,13 +40,13 @@ In the pane:
 - Switch between **All**, **Open** and **Done** to filter.
 - **Clear completed** deletes every done task from the file.
 
-The status line under the prompt shows `☰ 3 open · /todo open`, `☰ ✓ all done`, or a hint while the list is empty.
+The status line under the prompt shows `☰ 3 open · /todo open`, `☰ ✓ all done`, or a hint while the list is empty. Projects without a `todo.md` show nothing.
 
 You can also just ask Claude, e.g. *"mark the SSO task done in todo.md"* or *"what's left in todo.md?"*. The pane updates when the turn ends.
 
 ## The `todo.md` file
 
-The mod reads and writes `todo.md` in the session's working directory and creates it on the first add. Any Markdown list line counts as a task:
+The mod reads and writes `todo.md` in the session's working directory and creates it on the first add. Any Markdown list line (`-`, `*`, `+` or `1.`), nested or not, counts as a task:
 
 ```markdown
 # Sprint
@@ -56,7 +59,8 @@ The mod reads and writes `todo.md` in the session's working directory and create
 
 - `[x]` or `[X]` means done; `[ ]` or no box means open.
 - Headings, paragraphs and other lines are kept as they are and never shown.
-- Pasted `- [ ] ` / `* ` prefixes are stripped when adding, so copying a list in just works.
+- Lists inside fenced code blocks are ignored.
+- Pasted `- [ ] `, `* ` or `1. ` prefixes are stripped when adding, so copying a list in just works.
 
 Tip: add `todo.md` to your project's `.gitignore` if the list is personal.
 
@@ -76,7 +80,8 @@ Then start a new session.
 
 ```
 .claude-plugin/   plugin.json (name, version) and marketplace.json
-hooks/            register.tsx (command, pane, status line) and todos.ts (parsing)
+hooks/            register.tsx (/todo command, pane, status line, review/tidy prompts),
+                  todos.ts (parsing and editing todo.md) and *.test.ts(x)
 types/            state contract for the pane's values
 ```
 
@@ -94,8 +99,22 @@ To try changes live, copy the folder into a session's mods folder and enable hot
 
 Bump `version` in `.claude-plugin/plugin.json` with every release. Installed copies only update when it changes.
 
+## Changelog
+
+**0.2.0**
+- `/todo review` and `/todo tidy`
+- Ticking a task finds it by its text, so edits made since the pane was drawn no longer tick the wrong one
+- Text colours follow light and dark themes
+- No status line in projects without a `todo.md`
+- `+` and numbered lists count as tasks; lists inside code blocks are ignored
+
+**0.1.1**: task text renders as Markdown
+
+**0.1.0**: first release
+
 ## Limitations
 
-- The pane is drawn with Claude Code's built-in elements, so fonts, corner radii and button colours follow the app's theme. The palette is tuned for dark theme.
+- The pane is drawn with Claude Code's built-in elements, so fonts, corner radii and button colours follow the app's theme. Text colours follow your light or dark theme; the progress bar is always orange.
 - The terminal shows a block-character progress bar instead of the graphic one.
-- A task whose whole text is `open` can't be added with `/todo open`; use the pane instead.
+- A task whose whole text is `open`, `review` or `tidy` can't be added with `/todo`; use the pane instead.
+- `/todo review` and `/todo tidy` start a normal Claude turn, so they use your usage like any other prompt.

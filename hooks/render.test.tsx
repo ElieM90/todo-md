@@ -42,5 +42,10 @@ test('pane toggles, adds and opens on terminal and desktop', async ($, on) => {
   await pane.input({ key: 'new', text: 'z', kind: 'change' })
   await pane.press({ key: 'add' })
   expect(md).toBe('- [ ] milk\n- [ ] bread\n- [ ] x\n- [ ] y\n- [ ] z\n')
+  // a line added behind the pane's back: ticking "bread" (drawn at row 1) still ticks bread
+  await pane.press({ key: 'tab-all' })
+  md = '- [ ] new\n' + md
+  await pane.press({ key: 'done1' })
+  expect(md).toBe('- [ ] new\n- [ ] milk\n- [x] bread\n- [ ] x\n- [ ] y\n- [ ] z\n')
   await pane.unmount()
 })
