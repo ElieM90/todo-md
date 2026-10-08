@@ -143,9 +143,9 @@ export const register: Register = on => {
           {shown.map(r => (
             <Box key={`row${r.i}`} gap={1}>
               <Button key={`done${r.i}`} plain label={r.done ? '✔' : '○'} onPress={() => flip($, r.i)} />
-              {r.done
-                ? <Text color={C.done} strikethrough wrap="wrap">{r.text}</Text>
-                : <Text color={C.text} wrap="wrap">{r.text}</Text>}
+              <Box flexGrow={1} flexShrink={1}>
+                <ui.Markdown key={`md${r.i}`} text={r.done ? `~~${r.text}~~` : r.text} dimColor={r.done} />
+              </Box>
             </Box>
           ))}
         </Box>

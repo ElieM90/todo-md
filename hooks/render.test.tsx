@@ -34,8 +34,8 @@ test('pane toggles, adds and opens on terminal and desktop', async ($, on) => {
   expect(md).toBe('- [ ] milk\n- [x] eggs\n- [ ] bread\n- [ ] x\n- [ ] y\n')
   // Done tab shows only done rows; Clear completed drops them
   await pane.press({ key: 'tab-done' })
-  expect(await pane.find({ type: 'Text', text: 'milk' })).toBeUndefined()
-  expect(await pane.find({ type: 'Text', text: 'eggs' })).toBeDefined()
+  expect(await pane.find({ type: 'Markdown', text: /milk/ })).toBeUndefined()
+  expect(await pane.find({ type: 'Markdown', text: /eggs/ })).toBeDefined()
   await pane.press({ key: 'clear' })
   expect(md).toBe('- [ ] milk\n- [ ] bread\n- [ ] x\n- [ ] y\n')
   // typing then the Add button adds the draft
