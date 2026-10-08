@@ -38,7 +38,7 @@ const flip = async ($: EngineInterface, index: number, text: string) => {
 
 const openPane = ($: EngineInterface) => $.ui.open({ id: PANE, title: 'Todos' })
 
-// /todo review and /todo tidy hand the work to Claude as an ordinary prompt
+// /todo review, tidy and check hand the work to Claude as an ordinary prompt
 const ASK = {
   review: `Review ${FILE} in the project root and tell me what to start with. Read it first, then:
 - Pick the 1-3 open tasks I should do first, each with a one-line reason (unblocks other tasks, quick win, urgency, risk).
@@ -49,6 +49,11 @@ const ASK = {
 - Keep each task's done/open state, its wording (fixing obvious typos and formatting only), the existing headings and the order.
 - Look for tasks that mean the same thing, even when worded differently. Do not remove any yourself: list each likely duplicate pair and ask me which one to keep (or whether to merge them), then apply my answer.
 - Finish with a short summary of what changed.`,
+  check: `Check which open tasks in ${FILE} (project root) are already done. Read it first, then for each open task look for evidence in this project: the code, tests, config, docs and recent git history.
+- Mark a task done ("[ ]" to "[x]") only when the evidence clearly shows it is complete, and cite that evidence in one line (file:line or commit).
+- Do not mark tasks that are partly done or that you can't verify; list them separately with what is still missing.
+- Change nothing else in the file: no rewording, reordering or removing.
+- Finish with a short summary: marked done, still open, unclear.`,
 }
 
 type Filter = 'all' | 'open' | 'done'
@@ -78,7 +83,7 @@ const RULE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1" prese
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'todo', description: 'todo.md: /todo open · /todo <text> to add · /todo review · /todo tidy' })
+    await $.command.register({ name: 'todo', description: 'todo.md: /todo open · /todo <text> to add · /todo review · /todo tidy · /todo check' })
     await refresh($)
     return next(e)
   })
@@ -96,7 +101,7 @@ export const register: Register = on => {
       // a command hook can't queue a turn while it runs: submit just after it returns
       $.clock.after(0, () => void $.prompt.submit({ text: ASK[args as keyof typeof ASK], asUser: true })
         .catch(() => $.ui.toast(`Couldn't send /todo ${args} to Claude. Try again when the current turn ends.`)))
-      return { text: args === 'review' ? `Asking Claude to review ${FILE}…` : `Asking Claude to tidy ${FILE}…` }
+      return { text: `Asking Claude to ${args} ${FILE}…` }
     }
     if (args && args !== 'open') {
       await add($, e.args)

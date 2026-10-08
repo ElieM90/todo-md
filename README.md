@@ -7,7 +7,7 @@ A Claude Code mod that turns your project's `todo.md` into a live checklist pane
 - **Pane**: progress bar, All / Open / Done filters, one-click toggles, *Clear completed*
 - **Markdown**: task text renders bold, `code` and links
 - **Quick add**: `/todo <text>` from the prompt, one task per line
-- **Ask Claude**: `/todo review` suggests what to start with; `/todo tidy` cleans up the file and asks before merging duplicates
+- **Ask Claude**: `/todo review` suggests what to start with, `/todo tidy` cleans up the file and asks before merging duplicates, `/todo check` ticks off tasks the project shows are already done
 - **Status line**: shows how many tasks are open in any project that has a `todo.md`
 - **Stays in sync**: picks up edits made by hand or by Claude after every turn
 
@@ -32,6 +32,7 @@ Then start a new session. Installed plugins load when a session starts.
 | `/todo` + several lines | Add one task per line (Shift+Enter for new lines) |
 | `/todo review` | Claude reads `todo.md` and suggests the 1-3 tasks to start with, and flags unclear or oversized ones. It doesn't edit the file |
 | `/todo tidy` | Claude normalises the checkboxes, indentation and blank lines without changing any task, then lists likely duplicates and asks you which to keep |
+| `/todo check` | Claude looks through the code, tests and git history for each open task and ticks the ones that are clearly done, citing the evidence. Unverifiable or partly done tasks stay open and are listed |
 
 In the pane:
 
@@ -80,7 +81,7 @@ Then start a new session.
 
 ```
 .claude-plugin/   plugin.json (name, version) and marketplace.json
-hooks/            register.tsx (/todo command, pane, status line, review/tidy prompts),
+hooks/            register.tsx (/todo command, pane, status line, review/tidy/check prompts),
                   todos.ts (parsing and editing todo.md) and *.test.ts(x)
 types/            state contract for the pane's values
 ```
@@ -101,6 +102,8 @@ Bump `version` in `.claude-plugin/plugin.json` with every release. Installed cop
 
 ## Changelog
 
+**0.3.0**: `/todo check` ticks off tasks that are already done, with evidence
+
 **0.2.0**
 - `/todo review` and `/todo tidy`
 - Ticking a task finds it by its text, so edits made since the pane was drawn no longer tick the wrong one
@@ -116,5 +119,5 @@ Bump `version` in `.claude-plugin/plugin.json` with every release. Installed cop
 
 - The pane is drawn with Claude Code's built-in elements, so fonts, corner radii and button colours follow the app's theme. Text colours follow your light or dark theme; the progress bar is always orange.
 - The terminal shows a block-character progress bar instead of the graphic one.
-- A task whose whole text is `open`, `review` or `tidy` can't be added with `/todo`; use the pane instead.
-- `/todo review` and `/todo tidy` start a normal Claude turn, so they use your usage like any other prompt.
+- A task whose whole text is `open`, `review`, `tidy` or `check` can't be added with `/todo`; use the pane instead.
+- `/todo review`, `tidy` and `check` start a normal Claude turn, so they use your usage like any other prompt.
