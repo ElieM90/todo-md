@@ -1,5 +1,6 @@
 {
   "name": "todo-md",
   "owner": { "name": "ElieM90" },
-  "plugins": [{ "name": "todo-md", "source": "./" }]
+  "metadata": { "description": "todo-md: a Claude Code pane and /todo command for your project's todo.md checklist" },
+  "plugins": [{ "name": "todo-md", "source": "./", "description": "Show, add and tick off items in the project's todo.md" }]
 }

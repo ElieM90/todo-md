@@ -2,6 +2,8 @@
 
 A Claude Code mod that turns your project's `todo.md` into a live checklist pane. Add tasks, tick them off and track progress without leaving the session, while the file stays plain Markdown that you (and Claude) can edit by hand.
 
+<p align="center"><img src="docs/screenshot.png" alt="The Todos pane in Claude Code: progress bar, add field, All/Open/Done filters and a Markdown-rendered task list" width="420"></p>
+
 - **Pane**: progress bar, All / Open / Done filters, one-click toggles, *Clear completed*
 - **Markdown**: task text renders bold, `code` and links
 - **Quick add**: `/todo <text>` from the prompt, one task per line

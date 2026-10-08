@@ -1,1 +1,1 @@
-{ "name": "todo-md", "version": "0.1.1", "description": "Show, add and tick off items in the project's todo.md", "author": { "name": "ElieM90" }, "types": "./types/index.d.ts" }
+{ "name": "todo-md", "version": "0.1.1", "description": "Show, add and tick off items in the project's todo.md", "author": { "name": "ElieM90" }, "license": "MIT", "repository": "https://github.com/ElieM90/todo-md", "types": "./types/index.d.ts" }
