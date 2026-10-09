@@ -38,6 +38,14 @@ const flip = async ($: EngineInterface, index: number, text: string) => {
 
 const openPane = ($: EngineInterface) => $.ui.open({ id: PANE, title: 'Todos' })
 
+// starts an empty todo.md; an existing one is never overwritten
+const init = async ($: EngineInterface) => {
+  if ((await readFile($)) !== null) return false
+  await $.fs.write(FILE, '# Todo\n\n')
+  await refresh($)
+  return true
+}
+
 // /todo review, tidy and check hand the work to Claude as an ordinary prompt
 const ASK = {
   review: `Review ${FILE} in the project root and tell me what to start with. Read it first, then:
@@ -83,7 +91,7 @@ const RULE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1" prese
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'todo', description: 'todo.md: /todo open · /todo <text> to add · /todo review · /todo tidy · /todo check' })
+    await $.command.register({ name: 'todo', description: 'todo.md: /todo open · /todo init · /todo <text> to add · /todo review · /todo tidy · /todo check' })
     await refresh($)
     return next(e)
   })
@@ -97,11 +105,16 @@ export const register: Register = on => {
   on('command.run', { command: 'todo' }, async ($, e) => {
     const args = e.args.trim()
     if (Object.hasOwn(ASK, args)) {
-      if ((await readFile($)) === null) return { text: `No ${FILE} in this project yet. Add a task with /todo <text>.` }
+      if ((await readFile($)) === null) return { text: `No ${FILE} in this project yet. Create one with /todo init or add a task with /todo <text>.` }
       // a command hook can't queue a turn while it runs: submit just after it returns
       $.clock.after(0, () => void $.prompt.submit({ text: ASK[args as keyof typeof ASK], asUser: true })
         .catch(() => $.ui.toast(`Couldn't send /todo ${args} to Claude. Try again when the current turn ends.`)))
       return { text: `Asking Claude to ${args} ${FILE}…` }
+    }
+    if (args === 'init') {
+      const created = await init($)
+      await openPane($)
+      return { text: created ? `Created ${FILE}.` : `${FILE} already exists; left it as is.` }
     }
     if (args && args !== 'open') {
       await add($, e.args)

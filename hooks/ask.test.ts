@@ -11,7 +11,7 @@ test('/todo review, tidy and check hand a prompt to Claude', async ($, on) => {
   })
   on('prompt.submit', (_$, e) => {
     prompts.push(e.text)
-    return { value: { text: e.text, origin: e.origin } } as never
+    return { text: e.text } as never
   })
   await $.command.run({ command: 'todo', args: 'review' } as never)
   await $.command.run({ command: 'todo', args: ' tidy ' } as never)

@@ -6,6 +6,7 @@ A Claude Code mod that turns your project's `todo.md` into a live checklist pane
 
 - **Pane**: progress bar, All / Open / Done filters, one-click toggles, *Clear completed*
 - **Markdown**: task text renders bold, `code` and links
+- **Quick start**: `/todo init` creates an empty `todo.md`
 - **Quick add**: `/todo <text>` from the prompt, one task per line
 - **Ask Claude**: `/todo review` suggests what to start with, `/todo tidy` cleans up the file and asks before merging duplicates, `/todo check` ticks off tasks the project shows are already done
 - **Status line**: shows how many tasks are open in any project that has a `todo.md`
@@ -28,6 +29,7 @@ Then start a new session. Installed plugins load when a session starts.
 | Command | What it does |
 | --- | --- |
 | `/todo` or `/todo open` | Open the Todos pane |
+| `/todo init` | Create an empty `todo.md` (just a `# Todo` heading) and open the pane. An existing file is left as is |
 | `/todo <text>` | Add a task to `todo.md` |
 | `/todo` + several lines | Add one task per line (Shift+Enter for new lines) |
 | `/todo review` | Claude reads `todo.md` and suggests the 1-3 tasks to start with, and flags unclear or oversized ones. It doesn't edit the file |
@@ -47,7 +49,7 @@ You can also just ask Claude, e.g. *"mark the SSO task done in todo.md"* or *"wh
 
 ## The `todo.md` file
 
-The mod reads and writes `todo.md` in the session's working directory and creates it on the first add. Any Markdown list line (`-`, `*`, `+` or `1.`), nested or not, counts as a task:
+The mod reads and writes `todo.md` in the session's working directory. `/todo init` creates it, or it's created on the first add. Any Markdown list line (`-`, `*`, `+` or `1.`), nested or not, counts as a task:
 
 ```markdown
 # Sprint
@@ -101,6 +103,8 @@ To try changes live, copy the folder into a session's mods folder and enable hot
 Bump `version` in `.claude-plugin/plugin.json` with every release. Installed copies only update when it changes.
 
 ## Changelog
+
+**0.4.0**: `/todo init` creates an empty `todo.md`
 
 **0.3.0**: `/todo check` ticks off tasks that are already done, with evidence
 
